@@ -4,28 +4,50 @@ A production-oriented Knowledge Assistant backend built with **Django, Django RE
 
 The goal of this project is to build a backend that allows users to upload documents and, eventually, ask questions about their content using **Retrieval-Augmented Generation (RAG)**.
 
-The project is being developed incrementally, with an emphasis on clean architecture, testing, API design, containerization, documentation, and production-oriented engineering practices.
+The project is being developed incrementally with an emphasis on:
+
+* Clean domain-based architecture
+* Secure authentication and authorization
+* REST API design
+* Database-backed document management
+* Automated testing
+* Containerization
+* API documentation
+* Production-oriented engineering practices
 
 ---
 
 ## Project Status
 
-🚧 **Currently in Phase 1 — Backend Foundation**
+🚧 **Phase 1 — Backend Foundation: Complete**
 
-The core Django application, PostgreSQL database, Docker environment, document data models, migrations, and Django Admin are implemented.
+The initial backend foundation has been implemented and verified.
 
-AI/RAG functionality will be introduced in later phases.
+Currently implemented:
+
+* Django project structure
+* Domain-based Django applications
+* PostgreSQL
+* Docker and Docker Compose
+* Environment-based configuration
+* Document and document chunk models
+* Database migrations
+* Django Admin
+* Basic repository hygiene
+
+The next milestone is **Phase 2 — REST API & Authentication**.
 
 ---
 
-## Tech Stack
+# Tech Stack
+
+## Currently Implemented
 
 ### Backend
 
 * Python
 * Django
 * Django REST Framework
-* django-environ
 
 ### Database
 
@@ -36,6 +58,10 @@ AI/RAG functionality will be introduced in later phases.
 * Docker
 * Docker Compose
 
+### Configuration
+
+* django-environ
+
 ### Development
 
 * Git
@@ -43,9 +69,21 @@ AI/RAG functionality will be introduced in later phases.
 
 ---
 
-## Architecture
+## Planned Technologies
 
-Current architecture:
+The following technologies will be introduced in upcoming phases:
+
+* `djangorestframework-simplejwt` — JWT authentication
+* `pytest-django` — automated testing
+* `drf-spectacular` — OpenAPI / Swagger documentation
+
+Additional technologies for the RAG and production phases will be introduced as those phases begin.
+
+---
+
+# Architecture
+
+## Current Architecture
 
 ```text
                     Knowledge Assistant
@@ -59,7 +97,7 @@ Current architecture:
              PostgreSQL        File Storage
 ```
 
-The backend is containerized using Docker Compose:
+The application is containerized using Docker Compose:
 
 ```text
                     Docker Compose
@@ -71,11 +109,11 @@ The backend is containerized using Docker Compose:
            web:8000                db:5432
 ```
 
-The Django application communicates with PostgreSQL over the Docker Compose network.
+The Django application communicates with PostgreSQL through the Docker Compose network.
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```text
 Knowledge-Assistant/
@@ -120,13 +158,13 @@ Knowledge-Assistant/
 └── README.md
 ```
 
-### Application responsibilities
+### Application Responsibilities
 
 #### `accounts`
 
 Responsible for user-related functionality.
 
-Authentication and authorization functionality will be expanded in Phase 2.
+Authentication and authorization will be implemented and expanded during Phase 2.
 
 #### `documents`
 
@@ -137,15 +175,17 @@ Currently contains:
 * `Document`
 * `DocumentChunk`
 
+The REST API for document management will be implemented during Phase 3.
+
 #### `chat`
 
-Reserved for the future conversational/assistant functionality.
+Reserved for future conversational and Knowledge Assistant functionality.
 
 ---
 
 # Database Design
 
-The current database model is:
+The current database relationship is:
 
 ```text
                     User
@@ -155,27 +195,11 @@ The current database model is:
                      ▼
                  Document
                      │
-                     │ 1
+                     │ 1:N
                      │
                      ▼
               DocumentChunk
 ```
-
-## User
-
-Django's built-in User model is currently used.
-
-A user can own multiple documents.
-
-```text
-User
- │
- ├── Document 1
- ├── Document 2
- └── Document 3
-```
-
----
 
 ## Document
 
@@ -215,13 +239,15 @@ Current fields:
 | `embedding`  | Placeholder for future embeddings |
 | `created_at` | Chunk creation time               |
 
-Document chunks will become an important part of the RAG pipeline in Phase 2.
+The `embedding` field is intentionally left empty at this stage.
+
+Embedding generation and vector retrieval will be introduced during the RAG phase.
 
 ---
 
 # Environment Configuration
 
-Environment-specific configuration is stored using `.env`.
+Environment-specific configuration is stored in `.env`.
 
 The `.env` file is intentionally excluded from Git.
 
@@ -231,15 +257,13 @@ A template is provided through:
 .env.example
 ```
 
-Create your local environment file with:
+Create your local environment file:
 
 ```bash
 cp .env.example .env
 ```
 
-Then configure the required values.
-
-Example:
+Example configuration:
 
 ```env
 SECRET_KEY=replace-with-a-secure-secret-key
@@ -282,7 +306,7 @@ docker compose version
 
 ---
 
-## 1. Clone the repository
+## 1. Clone the Repository
 
 ```bash
 git clone <repository-url>
@@ -293,61 +317,45 @@ Replace `<repository-url>` with the actual GitHub repository URL.
 
 ---
 
-## 2. Create the environment file
+## 2. Create the Environment File
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and provide the required configuration.
+Update `.env` with the required configuration.
 
 ---
 
-## 3. Start the application
-
-From the repository root:
+## 3. Start the Application
 
 ```bash
 docker compose up -d
 ```
 
-This starts:
+This starts the Django and PostgreSQL services.
 
-```text
-Django
-PostgreSQL
-```
-
-in separate containers.
-
----
-
-## 4. Check running containers
+Check the running containers:
 
 ```bash
 docker compose ps
-```
-
-You should see both services running.
-
-Expected services:
-
-```text
-knowledge_assistant_web
-knowledge_assistant_db
 ```
 
 ---
 
 # Database Setup
 
-After starting the containers, apply Django migrations:
+Create and apply Django migrations:
+
+```bash
+docker compose run --rm web python manage.py makemigrations
+```
 
 ```bash
 docker compose run --rm web python manage.py migrate
 ```
 
-This creates the required Django and application tables in PostgreSQL.
+Migration files are part of the source code and should be committed to Git.
 
 ---
 
@@ -359,7 +367,7 @@ Create a Django superuser:
 docker compose run --rm web python manage.py createsuperuser
 ```
 
-Follow the prompts to create your administrator account.
+Follow the prompts to create the administrator account.
 
 ---
 
@@ -371,9 +379,7 @@ Once the application is running, open:
 http://127.0.0.1:8000/admin/
 ```
 
-Log in using the superuser credentials.
-
-The admin interface currently provides access to:
+The Django Admin currently provides access to:
 
 * Users
 * Groups
@@ -384,7 +390,7 @@ The admin interface currently provides access to:
 
 # Document Storage
 
-Uploaded documents are stored under the Django media directory:
+Uploaded documents are stored under:
 
 ```text
 backend/
@@ -394,25 +400,25 @@ backend/
 
 The `media/` directory is excluded from Git.
 
-This prevents uploaded files from accidentally becoming part of the source repository.
+This prevents locally uploaded documents from being accidentally committed to the repository.
 
 ---
 
 # Stopping the Application
 
-To stop the Django and PostgreSQL containers:
+Stop the Django and PostgreSQL containers:
 
 ```bash
 docker compose down
 ```
-
-The PostgreSQL data is stored in a Docker named volume, so running `docker compose down` does not remove the database data.
 
 To start the application again:
 
 ```bash
 docker compose up -d
 ```
+
+PostgreSQL data is persisted using a Docker named volume.
 
 ### Important
 
@@ -426,39 +432,15 @@ unless you intentionally want to delete the PostgreSQL volume and its data.
 
 ---
 
-# Database Migrations
-
-Create migrations after changing Django models:
-
-```bash
-docker compose run --rm web python manage.py makemigrations
-```
-
-Apply migrations:
-
-```bash
-docker compose run --rm web python manage.py migrate
-```
-
-Migration files are part of the source code and should be committed to Git.
-
-For example:
-
-```text
-backend/documents/migrations/0001_initial.py
-```
-
----
-
 # Development Checks
 
-Run Django's system checks with:
+Run Django's system checks:
 
 ```bash
 docker compose run --rm web python manage.py check
 ```
 
-Check the database configuration:
+Check the configured database:
 
 ```bash
 docker compose run --rm web python manage.py check --database default
@@ -466,23 +448,36 @@ docker compose run --rm web python manage.py check --database default
 
 ---
 
-# Git and Repository Hygiene
+# Git Repository Hygiene
 
-The repository intentionally ignores development-specific files such as:
+The repository intentionally ignores development-specific files:
 
 ```text
 .env
 .venv/
+venv/
 __pycache__/
 *.pyc
 *.sqlite3
+db.sqlite3
 media/
 staticfiles/
+.vscode/
+.idea/
+*.log
 ```
 
-These files should not be committed to the repository.
+The following should remain tracked:
 
-Migration files, source code, Docker configuration, and documentation should be committed.
+```text
+.env.example
+Dockerfile
+docker-compose.yml
+requirements.txt
+README.md
+Django source code
+Django migration files
+```
 
 ---
 
@@ -491,19 +486,25 @@ Migration files, source code, Docker configuration, and documentation should be 
 The intended development workflow is:
 
 ```text
-1. Modify Django models/code
-          ↓
-2. Run Django checks
-          ↓
-3. Create migrations if models changed
-          ↓
-4. Apply migrations
-          ↓
-5. Test functionality
-          ↓
-6. Update documentation if required
-          ↓
-7. Commit changes
+Modify code
+    │
+    ▼
+Run Django checks
+    │
+    ▼
+Create migrations if models changed
+    │
+    ▼
+Apply migrations
+    │
+    ▼
+Test functionality
+    │
+    ▼
+Update documentation
+    │
+    ▼
+Commit changes
 ```
 
 Example:
@@ -520,9 +521,11 @@ docker compose up -d
 
 ---
 
-# Current Implementation
+# Development Roadmap
 
 ## Phase 1 — Backend Foundation
+
+**Status: ✅ Complete**
 
 * [x] Django project setup
 * [x] Domain-based application structure
@@ -533,106 +536,210 @@ docker compose up -d
 * [x] Docker environment
 * [x] Docker Compose
 * [x] Environment variable configuration
-* [x] `.gitignore` configuration
+* [x] `.gitignore`
 * [x] `Document` model
 * [x] `DocumentChunk` model
 * [x] Document processing status
 * [x] Database migrations
-* [x] PostgreSQL integration
-* [x] Django Admin configuration
+* [x] Django → PostgreSQL integration
+* [x] Django Admin
 * [x] Basic repository documentation
 
 ---
 
-# Roadmap
+# Phase 2 — REST API & Authentication
 
-## Phase 1 — Backend Foundation
+**Status: 🔜 Upcoming**
 
-**Status: In progress / checkpoint**
-
-Django, PostgreSQL, Docker, models, migrations, and project structure.
-
----
-
-## Phase 2 — Authentication & RAG Foundation
+## Week 2 — DRF + JWT Authentication
 
 Planned:
 
-* [ ] Django REST Framework API configuration
-* [ ] JWT authentication
-* [ ] User registration
-* [ ] Login and token refresh
+* [ ] Install and configure Django REST Framework
+* [ ] Install `djangorestframework-simplejwt`
+* [ ] Configure JWT authentication
+* [ ] Configure access-token lifetime
+* [ ] Configure refresh-token lifetime
+* [ ] Login endpoint
+* [ ] Refresh-token endpoint
+* [ ] Registration endpoint
 * [ ] Authentication permissions
-* [ ] Document ownership enforcement
-* [ ] Document upload API
-* [ ] Document CRUD API
-* [ ] File validation
-* [ ] API pagination
-* [ ] OpenAPI / Swagger documentation
-* [ ] Document text extraction
-* [ ] Text chunking
-* [ ] Embedding generation
-* [ ] Vector search
+* [ ] `AllowAny` for public authentication endpoints
+* [ ] Password hashing
+* [ ] Password validation
+* [ ] Authentication tests
+* [ ] `pytest-django` setup
+* [ ] Invalid and missing-token tests
+* [ ] Duplicate-registration tests
+
+The authentication flow will follow:
+
+```text
+Register
+   │
+   ▼
+Login
+   │
+   ▼
+Access Token + Refresh Token
+   │
+   ▼
+Protected API
+   │
+   ▼
+Refresh Access Token
+```
 
 ---
 
-## Phase 3 — Knowledge Assistant
+# Phase 3 — Document CRUD API
+
+**Status: 🔜 Upcoming**
+
+## Week 3 — Document REST API
+
+Planned:
+
+* [ ] `DocumentSerializer`
+* [ ] `DocumentViewSet`
+* [ ] Document upload
+* [ ] Document listing
+* [ ] Document retrieval
+* [ ] Document update
+* [ ] Document deletion
+* [ ] Owner-based queryset filtering
+* [ ] Server-side owner assignment
+* [ ] File extension validation
+* [ ] File size validation
+* [ ] Pagination
+* [ ] API error handling
+* [ ] Ownership isolation tests
+* [ ] OpenAPI schema
+* [ ] Swagger UI
+* [ ] End-to-end API testing
+
+Planned API structure:
+
+```text
+/api/auth/token/
+/api/auth/token/refresh/
+/api/auth/register/
+
+/api/documents/
+/api/documents/{id}/
+```
+
+Document ownership will be enforced server-side.
+
+The intended security model is:
+
+```text
+User A
+  │
+  ├── Document A
+  └── Document B
+
+User B
+  │
+  └── Document C
+
+User B cannot access Document A or B.
+```
+
+---
+
+# Phase 4 — RAG Pipeline
+
+**Status: 🔜 Planned**
+
+Planned:
+
+* [ ] Document text extraction
+* [ ] Document processing pipeline
+* [ ] Text chunking
+* [ ] Embedding generation
+* [ ] Vector database integration
+* [ ] Semantic search
+* [ ] Retrieval pipeline
+
+The existing `DocumentChunk.embedding` field is reserved for this phase.
+
+---
+
+# Phase 5 — Knowledge Assistant
+
+**Status: 🔜 Planned**
 
 Planned:
 
 * [ ] Question-answering API
-* [ ] Semantic document retrieval
 * [ ] Retrieval-Augmented Generation
-* [ ] Source/reference information in responses
+* [ ] Relevant document retrieval
+* [ ] Context construction
+* [ ] LLM integration
+* [ ] Source/reference information
 * [ ] Conversation history
 * [ ] Chat API
-* [ ] Improved prompt management
+
+Expected high-level flow:
+
+```text
+User Question
+      │
+      ▼
+Question Processing
+      │
+      ▼
+Vector Search
+      │
+      ▼
+Relevant Document Chunks
+      │
+      ▼
+Context Construction
+      │
+      ▼
+LLM
+      │
+      ▼
+Grounded Answer
+```
 
 ---
 
-## Phase 4 — Production Engineering
+# Phase 6 — Production Engineering & CI/CD
+
+**Status: 🔜 Planned**
 
 Planned:
 
-* [ ] Background document processing
+* [ ] Unit tests
+* [ ] API integration tests
+* [ ] Authentication tests
+* [ ] Ownership/security tests
+* [ ] GitHub Actions
+* [ ] Continuous Integration
+* [ ] Background processing
 * [ ] Redis
 * [ ] Celery
 * [ ] Caching
 * [ ] Rate limiting
 * [ ] Structured logging
-* [ ] Error handling
 * [ ] Health checks
 * [ ] Observability
 * [ ] Performance optimization
-
----
-
-## Phase 5 — Testing, CI/CD & Deployment
-
-Planned:
-
-* [ ] Unit tests
-* [ ] API tests
-* [ ] Integration tests
-* [ ] pytest
-* [ ] GitHub Actions
-* [ ] Automated test pipeline
-* [ ] Docker image optimization
 * [ ] Production deployment
-* [ ] Production database
-* [ ] Environment-specific configuration
 
 ---
 
-# Versioning
+# Milestones
 
-Current checkpoint:
+| Version | Milestone                | Status             |
+| ------- | ------------------------ | ------------------ |
+| `v0.1`  | Backend Foundation       | Current checkpoint |
+| `v0.2`  | JWT Authentication       | Planned            |
+| `v0.3`  | Document CRUD API        | Planned            |
 
-```text
-v0.1 — Backend Foundation
-```
-
-Future versions will be tagged as major project milestones are completed.
 
 ---
 
@@ -648,7 +755,7 @@ Before submitting a change:
 4. Update documentation when necessary.
 5. Submit a pull request describing the change.
 
-A detailed `CONTRIBUTING.md` will be added before the project becomes fully open for external contributions.
+A detailed `CONTRIBUTING.md` will be added as the project becomes ready for external contributions.
 
 ---
 
