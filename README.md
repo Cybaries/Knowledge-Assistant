@@ -555,11 +555,11 @@ docker compose up -d
 
 Planned:
 
-* [ ] Install and configure Django REST Framework
-* [ ] Install `djangorestframework-simplejwt`
-* [ ] Configure JWT authentication
-* [ ] Configure access-token lifetime
-* [ ] Configure refresh-token lifetime
+* [x] Install and configure Django REST Framework
+* [x] Install `djangorestframework-simplejwt`
+* [x] Configure JWT authentication
+* [x] Configure access-token lifetime
+* [x] Configure refresh-token lifetime
 * [ ] Login endpoint
 * [ ] Refresh-token endpoint
 * [ ] Registration endpoint
