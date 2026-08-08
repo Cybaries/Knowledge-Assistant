@@ -1,2 +1,7 @@
 .env
 backend/.venv
+db.sqlite3
+*.sqlite3
+backend/media/
+__pycache__/
+*.pyc
