@@ -549,7 +549,7 @@ docker compose up -d
 
 # Phase 2 — REST API & Authentication
 
-**Status: 🔜 Upcoming**
+**Status: ✅ Complete**
 
 ## Week 2 — DRF + JWT Authentication
 
@@ -560,17 +560,17 @@ Planned:
 * [x] Configure JWT authentication
 * [x] Configure access-token lifetime
 * [x] Configure refresh-token lifetime
-* [ ] Login endpoint
-* [ ] Refresh-token endpoint
-* [ ] Registration endpoint
-* [ ] Authentication permissions
-* [ ] `AllowAny` for public authentication endpoints
-* [ ] Password hashing
-* [ ] Password validation
-* [ ] Authentication tests
-* [ ] `pytest-django` setup
-* [ ] Invalid and missing-token tests
-* [ ] Duplicate-registration tests
+* [x] Login endpoint
+* [x] Refresh-token endpoint
+* [x] Registration endpoint
+* [x] Authentication permissions
+* [x] `AllowAny` for public authentication endpoints
+* [x] Password hashing
+* [x] Password validation
+* [x] Authentication tests
+* [x] `pytest-django` setup
+* [x] Invalid and missing-token tests
+* [x] Duplicate-registration tests
 
 The authentication flow will follow:
 
