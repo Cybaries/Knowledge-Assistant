@@ -594,29 +594,29 @@ Refresh Access Token
 
 # Phase 3 — Document CRUD API
 
-**Status: 🔜 Upcoming**
+**Status: ✅ Complete**
 
 ## Week 3 — Document REST API
 
 Planned:
 
-* [ ] `DocumentSerializer`
-* [ ] `DocumentViewSet`
-* [ ] Document upload
-* [ ] Document listing
-* [ ] Document retrieval
-* [ ] Document update
-* [ ] Document deletion
-* [ ] Owner-based queryset filtering
-* [ ] Server-side owner assignment
-* [ ] File extension validation
-* [ ] File size validation
-* [ ] Pagination
-* [ ] API error handling
-* [ ] Ownership isolation tests
-* [ ] OpenAPI schema
-* [ ] Swagger UI
-* [ ] End-to-end API testing
+* [x] `DocumentSerializer`
+* [x] `DocumentViewSet`
+* [x] Document upload
+* [x] Document listing
+* [x] Document retrieval
+* [x] Document update
+* [x] Document deletion
+* [x] Owner-based queryset filtering
+* [x] Server-side owner assignment
+* [x] File extension validation
+* [x] File size validation
+* [x] Pagination
+* [x] API error handling
+* [x] Ownership isolation tests
+* [x] OpenAPI schema
+* [x] Swagger UI
+* [x] End-to-end API testing
 
 Planned API structure:
 
@@ -650,7 +650,7 @@ User B cannot access Document A or B.
 
 # Phase 4 — RAG Pipeline
 
-**Status: 🔜 Planned**
+**Status: 🔜 Upcoming**
 
 Planned:
 
