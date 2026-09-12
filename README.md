@@ -1034,13 +1034,14 @@ Planned:
 
 # Milestones
 
-| Version | Milestone                                                      | Status   |
-| ------- | -------------------------------------------------------------- | -------- |
-| `v0.1`  | Backend Foundation + REST API + Authentication + Document CRUD | Complete |
-| `v0.2`  | JWT Authentication                                             | Complete |
-| `v0.3`  | Document CRUD API                                              | Complete |
-| `v0.4`  | RAG Pipeline                                                   | Planned  |
-| `v0.5`  | Knowledge Assistant                                            | Planned  |
+| Version | Milestone | Status |
+|---|---|---|
+| v0.1 | Initial Project Foundation | Complete |
+| v0.2 | JWT Authentication | Complete |
+| v0.3 | Document CRUD API | Complete |
+| v0.4 | Repository Hygiene, Documentation & Release Preparation | Complete |
+| v0.5 | RAG Pipeline | Planned |
+| v0.6 | Knowledge Assistant | Planned |
 
 ---
 
