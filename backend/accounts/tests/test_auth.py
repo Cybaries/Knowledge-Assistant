@@ -1,11 +1,3 @@
-import os
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-
-import django
-
-django.setup()
-
 import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
@@ -35,29 +27,6 @@ def test_register_user():
 
     assert User.objects.filter(username="testuser").exists()
 
-
-@pytest.mark.django_db
-def test_duplicate_username_registration():
-    User.objects.create_user(
-        username="existinguser",
-        email="existing@example.com",
-        password="StrongPass123",
-    )
-
-    client = APIClient()
-
-    response = client.post(
-        "/api/auth/register/",
-        {
-            "username": "existinguser",
-            "email": "another@example.com",
-            "password": "StrongPass123",
-        },
-        format="json",
-    )
-
-    assert response.status_code == 400
-    assert "username" in response.data
 
 @pytest.mark.django_db
 def test_duplicate_username_registration():
@@ -150,3 +119,4 @@ def test_complete_authentication_flow():
     assert "access" in refresh_response.data
 
     new_access_token = refresh_response.data["access"]
+    assert new_access_token

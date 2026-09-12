@@ -3,10 +3,8 @@ services:
     image: postgres:16
     container_name: knowledge_assistant_db
     restart: unless-stopped
-    environment:
-      POSTGRES_DB: knowledge_assistant
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:

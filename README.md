@@ -17,25 +17,17 @@ The project is being developed incrementally with an emphasis on:
 
 ---
 
-## Project Status
+# Project Status
 
 🚧 **Phase 1 — Backend Foundation: Complete**
 
-The initial backend foundation has been implemented and verified.
+🚧 **Phase 2 — REST API & Authentication: Complete**
 
-Currently implemented:
+🚧 **Phase 3 — Document CRUD API: Complete**
 
-* Django project structure
-* Domain-based Django applications
-* PostgreSQL
-* Docker and Docker Compose
-* Environment-based configuration
-* Document and document chunk models
-* Database migrations
-* Django Admin
-* Basic repository hygiene
+The backend foundation, JWT authentication, document management API, ownership isolation, pagination, automated tests, and OpenAPI documentation have been implemented and verified.
 
-The next milestone is **Phase 2 — REST API & Authentication**.
+The next milestone is **Phase 4 — RAG Pipeline**.
 
 ---
 
@@ -62,6 +54,19 @@ The next milestone is **Phase 2 — REST API & Authentication**.
 
 * django-environ
 
+### Authentication
+
+* `djangorestframework-simplejwt` — JWT authentication
+
+### Testing
+
+* pytest
+* pytest-django
+
+### API Documentation
+
+* drf-spectacular — OpenAPI / Swagger documentation
+
 ### Development
 
 * Git
@@ -73,11 +78,24 @@ The next milestone is **Phase 2 — REST API & Authentication**.
 
 The following technologies will be introduced in upcoming phases:
 
-* `djangorestframework-simplejwt` — JWT authentication
-* `pytest-django` — automated testing
-* `drf-spectacular` — OpenAPI / Swagger documentation
-
-Additional technologies for the RAG and production phases will be introduced as those phases begin.
+* Document text extraction
+* Document processing pipeline
+* Text chunking
+* Embedding generation
+* Vector database integration
+* Semantic search
+* Retrieval-Augmented Generation
+* LLM integration
+* Background processing
+* Redis
+* Celery
+* Caching
+* Rate limiting
+* Structured logging
+* Health checks
+* Observability
+* Performance optimization
+* Production deployment
 
 ---
 
@@ -100,13 +118,13 @@ Additional technologies for the RAG and production phases will be introduced as 
 The application is containerized using Docker Compose:
 
 ```text
-                    Docker Compose
-                         │
-              ┌──────────┴──────────┐
-              │                     │
-              ▼                     ▼
-        Django Container      PostgreSQL Container
-           web:8000                db:5432
+                     Docker Compose
+                          │
+                 ┌────────┴────────┐
+                 │                 │
+                 ▼                 ▼
+          Django Container   PostgreSQL Container
+              web:8000             db:5432
 ```
 
 The Django application communicates with PostgreSQL through the Docker Compose network.
@@ -125,6 +143,8 @@ Knowledge-Assistant/
 │   │   ├── admin.py
 │   │   ├── apps.py
 │   │   ├── models.py
+│   │   ├── tests/
+│   │   │   └── test_auth.py
 │   │   └── ...
 │   │
 │   ├── documents/
@@ -133,6 +153,8 @@ Knowledge-Assistant/
 │   │   ├── admin.py
 │   │   ├── apps.py
 │   │   ├── models.py
+│   │   ├── tests/
+│   │   │   └── test_documents.py
 │   │   └── ...
 │   │
 │   ├── chat/
@@ -164,7 +186,15 @@ Knowledge-Assistant/
 
 Responsible for user-related functionality.
 
-Authentication and authorization will be implemented and expanded during Phase 2.
+Current functionality includes:
+
+* User registration
+* JWT authentication
+* Token refresh
+* Authentication permissions
+* Password hashing
+* Password validation
+* Authentication tests
 
 #### `documents`
 
@@ -174,8 +204,15 @@ Currently contains:
 
 * `Document`
 * `DocumentChunk`
-
-The REST API for document management will be implemented during Phase 3.
+* Document REST API
+* Document upload
+* Document listing
+* Document retrieval
+* Document update
+* Document deletion
+* Owner-based access control
+* File validation
+* Pagination
 
 #### `chat`
 
@@ -193,12 +230,12 @@ The current database relationship is:
                      │ 1
                      │
                      ▼
-                 Document
+                  Document
                      │
                      │ 1:N
                      │
                      ▼
-              DocumentChunk
+               DocumentChunk
 ```
 
 ## Document
@@ -222,8 +259,6 @@ Document status currently supports:
 * Processing
 * Ready
 * Failed
-
----
 
 ## DocumentChunk
 
@@ -267,6 +302,7 @@ Example configuration:
 
 ```env
 SECRET_KEY=replace-with-a-secure-secret-key
+
 DEBUG=True
 
 DB_NAME=knowledge_assistant
@@ -274,6 +310,10 @@ DB_USER=postgres
 DB_PASSWORD=postgres
 DB_HOST=db
 DB_PORT=5432
+
+POSTGRES_DB=knowledge_assistant
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
 ```
 
 ### Important
@@ -341,6 +381,13 @@ Check the running containers:
 docker compose ps
 ```
 
+Expected services:
+
+```text
+knowledge_assistant_web
+knowledge_assistant_db
+```
+
 ---
 
 # Database Setup
@@ -388,6 +435,134 @@ The Django Admin currently provides access to:
 
 ---
 
+# REST API
+
+The current API provides JWT authentication and document management.
+
+## Authentication Endpoints
+
+```text
+/api/auth/token/
+/api/auth/token/refresh/
+/api/auth/register/
+```
+
+### Login
+
+```text
+POST /api/auth/token/
+```
+
+Returns an access token and refresh token.
+
+### Refresh Token
+
+```text
+POST /api/auth/token/refresh/
+```
+
+Returns a new access token.
+
+### Registration
+
+```text
+POST /api/auth/register/
+```
+
+Creates a new user account.
+
+---
+
+# Document API
+
+The document API provides CRUD functionality:
+
+```text
+/api/documents/
+/api/documents/{id}/
+```
+
+Supported operations include:
+
+* Upload
+* List
+* Retrieve
+* Update
+* Delete
+
+Documents are scoped to the authenticated user.
+
+A user can only access documents that they own.
+
+The owner is assigned server-side and cannot be supplied or modified through the serializer.
+
+---
+
+# Document Validation
+
+Uploaded documents are validated before creation.
+
+Supported file types:
+
+* PDF
+* TXT
+* DOCX
+
+Maximum file size:
+
+```text
+10 MB
+```
+
+Invalid file extensions and oversized files are rejected by the API.
+
+---
+
+# Pagination
+
+The document list API uses page-number pagination.
+
+Default page size:
+
+```text
+10
+```
+
+Example:
+
+```text
+GET /api/documents/?page=2
+```
+
+The API returns:
+
+* Total count
+* Next page
+* Previous page
+* Results
+
+---
+
+# API Documentation
+
+The project uses `drf-spectacular` to generate an OpenAPI schema.
+
+OpenAPI schema:
+
+```text
+http://127.0.0.1:8000/api/schema/
+```
+
+Swagger UI:
+
+```text
+http://127.0.0.1:8000/api/docs/
+```
+
+Swagger UI can be used to explore and interact with the available API endpoints.
+
+---
+
 # Document Storage
 
 Uploaded documents are stored under:
@@ -401,6 +576,33 @@ backend/
 The `media/` directory is excluded from Git.
 
 This prevents locally uploaded documents from being accidentally committed to the repository.
+
+---
+
+# Testing
+
+The project uses `pytest` and `pytest-django` for automated testing.
+
+Run the complete test suite:
+
+```bash
+docker compose exec web pytest
+```
+
+The test suite currently covers areas including:
+
+* User registration
+* Duplicate username registration
+* JWT authentication
+* Token refresh
+* Invalid authentication
+* Missing authentication
+* Document creation
+* Document listing
+* Document ownership
+* Ownership isolation
+* Document validation
+* Pagination
 
 ---
 
@@ -454,16 +656,21 @@ The repository intentionally ignores development-specific files:
 
 ```text
 .env
+
 .venv/
 venv/
+
 __pycache__/
 *.pyc
 *.sqlite3
 db.sqlite3
+
 media/
 staticfiles/
+
 .vscode/
 .idea/
+
 *.log
 ```
 
@@ -475,6 +682,7 @@ Dockerfile
 docker-compose.yml
 requirements.txt
 README.md
+
 Django source code
 Django migration files
 ```
@@ -516,6 +724,8 @@ docker compose run --rm web python manage.py makemigrations
 
 docker compose run --rm web python manage.py migrate
 
+docker compose exec web pytest
+
 docker compose up -d
 ```
 
@@ -553,7 +763,7 @@ docker compose up -d
 
 ## Week 2 — DRF + JWT Authentication
 
-Planned:
+Completed:
 
 * [x] Install and configure Django REST Framework
 * [x] Install `djangorestframework-simplejwt`
@@ -572,7 +782,7 @@ Planned:
 * [x] Invalid and missing-token tests
 * [x] Duplicate-registration tests
 
-The authentication flow will follow:
+The authentication flow follows:
 
 ```text
 Register
@@ -598,7 +808,7 @@ Refresh Access Token
 
 ## Week 3 — Document REST API
 
-Planned:
+Completed:
 
 * [x] `DocumentSerializer`
 * [x] `DocumentViewSet`
@@ -618,7 +828,7 @@ Planned:
 * [x] Swagger UI
 * [x] End-to-end API testing
 
-Planned API structure:
+Current API structure:
 
 ```text
 /api/auth/token/
@@ -629,7 +839,7 @@ Planned API structure:
 /api/documents/{id}/
 ```
 
-Document ownership will be enforced server-side.
+Document ownership is enforced server-side.
 
 The intended security model is:
 
@@ -713,7 +923,7 @@ Grounded Answer
 
 Planned:
 
-* [ ] Unit tests
+* [ ] Expanded unit test coverage
 * [ ] API integration tests
 * [ ] Authentication tests
 * [ ] Ownership/security tests
@@ -734,12 +944,11 @@ Planned:
 
 # Milestones
 
-| Version | Milestone                | Status             |
-| ------- | ------------------------ | ------------------ |
-| `v0.1`  | Backend Foundation       | Current checkpoint |
-| `v0.2`  | JWT Authentication       | Planned            |
-| `v0.3`  | Document CRUD API        | Planned            |
-
+| Version | Milestone          | Status   |
+| ------- | ------------------ | -------- |
+| `v0.1`  | Backend Foundation | Complete |
+| `v0.2`  | JWT Authentication | Complete |
+| `v0.3`  | Document CRUD API  | Complete |
 
 ---
 
