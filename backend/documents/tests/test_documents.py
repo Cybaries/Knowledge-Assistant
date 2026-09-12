@@ -48,9 +48,9 @@ def test_user_can_only_list_own_documents():
     assert response.status_code == 200
 
     titles = [
-    document["title"]
-    for document in response.data["results"]
-]
+        document["title"]
+        for document in response.data["results"]
+    ]
 
     assert "User 1 Document" in titles
     assert "User 2 Document" not in titles
