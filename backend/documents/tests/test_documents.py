@@ -47,13 +47,11 @@ def test_user_can_only_list_own_documents():
 
     assert response.status_code == 200
 
-    titles = [
-        document["title"]
-        for document in response.data["results"]
-    ]
+    titles = [document["title"] for document in response.data["results"]]
 
     assert "User 1 Document" in titles
     assert "User 2 Document" not in titles
+
 
 @pytest.mark.django_db
 def test_user_cannot_retrieve_another_users_document():
@@ -76,11 +74,10 @@ def test_user_cannot_retrieve_another_users_document():
     client = APIClient()
     client.force_authenticate(user=user1)
 
-    response = client.get(
-        f"/api/documents/{document.id}/"
-    )
+    response = client.get(f"/api/documents/{document.id}/")
 
     assert response.status_code == 404
+
 
 @pytest.mark.django_db
 def test_user_can_upload_valid_file():
@@ -113,6 +110,7 @@ def test_user_can_upload_valid_file():
         owner=user,
     ).exists()
 
+
 @pytest.mark.django_db
 def test_upload_rejects_invalid_file_type():
     user = User.objects.create_user(
@@ -140,6 +138,7 @@ def test_upload_rejects_invalid_file_type():
 
     assert response.status_code == 400
     assert "file" in response.data
+
 
 @pytest.mark.django_db
 def test_upload_rejects_large_file():

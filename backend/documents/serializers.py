@@ -36,13 +36,10 @@ class DocumentSerializer(serializers.ModelSerializer):
 
         if extension not in self.ALLOWED_EXTENSIONS:
             raise serializers.ValidationError(
-                "Unsupported file type. "
-                "Allowed types: PDF, TXT, DOCX."
+                "Unsupported file type. " "Allowed types: PDF, TXT, DOCX."
             )
 
         if file.size > self.MAX_FILE_SIZE:
-            raise serializers.ValidationError(
-                "File size must not exceed 10 MB."
-            )
+            raise serializers.ValidationError("File size must not exceed 10 MB.")
 
         return file

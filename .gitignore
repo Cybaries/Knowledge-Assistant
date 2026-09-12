@@ -1,5 +1,5 @@
 # Python
-*__pycache__/
+__pycache__/
 *.py[cod]
 *$py.class
 
@@ -29,3 +29,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Ruff cache
+*.ruff_cache/

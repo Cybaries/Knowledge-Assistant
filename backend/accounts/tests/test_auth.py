@@ -51,6 +51,7 @@ def test_duplicate_username_registration():
     assert response.status_code == 400
     assert "username" in response.data
 
+
 @pytest.mark.django_db
 def test_login_with_wrong_password_fails():
     User.objects.create_user(
@@ -103,7 +104,6 @@ def test_complete_authentication_flow():
     assert "access" in login_response.data
     assert "refresh" in login_response.data
 
-    access_token = login_response.data["access"]
     refresh_token = login_response.data["refresh"]
 
     # 4. Refresh access token

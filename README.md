@@ -13,6 +13,7 @@ The project is being developed incrementally with an emphasis on:
 * Automated testing
 * Containerization
 * API documentation
+* Code quality and repository hygiene
 * Production-oriented engineering practices
 
 ---
@@ -25,9 +26,11 @@ The project is being developed incrementally with an emphasis on:
 
 🚧 **Phase 3 — Document CRUD API: Complete**
 
-The backend foundation, JWT authentication, document management API, ownership isolation, pagination, automated tests, and OpenAPI documentation have been implemented and verified.
+The backend foundation, JWT authentication, document management API, ownership isolation, pagination, automated tests, OpenAPI documentation, Docker, and PostgreSQL integration have been implemented and verified.
 
-The next milestone is **Phase 4 — RAG Pipeline**.
+The next milestone is:
+
+**Phase 4 — RAG Pipeline**
 
 ---
 
@@ -67,6 +70,11 @@ The next milestone is **Phase 4 — RAG Pipeline**.
 
 * drf-spectacular — OpenAPI / Swagger documentation
 
+### Code Quality
+
+* Black — Python formatting
+* Ruff — Python linting
+
 ### Development
 
 * Git
@@ -95,6 +103,7 @@ The following technologies will be introduced in upcoming phases:
 * Health checks
 * Observability
 * Performance optimization
+* CI/CD
 * Production deployment
 
 ---
@@ -109,22 +118,22 @@ The following technologies will be introduced in upcoming phases:
                            ▼
                     Django Backend
                            │
-                  ┌────────┴────────┐
-                  │                 │
-                  ▼                 ▼
-             PostgreSQL        File Storage
+                    ┌──────┴──────┐
+                    │             │
+                    ▼             ▼
+               PostgreSQL     File Storage
 ```
 
 The application is containerized using Docker Compose:
 
 ```text
-                     Docker Compose
-                          │
-                 ┌────────┴────────┐
-                 │                 │
-                 ▼                 ▼
-          Django Container   PostgreSQL Container
-              web:8000             db:5432
+                      Docker Compose
+                           │
+                    ┌──────┴──────┐
+                    │             │
+                    ▼             ▼
+             Django Container  PostgreSQL Container
+                 web:8000            db:5432
 ```
 
 The Django application communicates with PostgreSQL through the Docker Compose network.
@@ -143,26 +152,28 @@ Knowledge-Assistant/
 │   │   ├── admin.py
 │   │   ├── apps.py
 │   │   ├── models.py
-│   │   ├── tests/
-│   │   │   └── test_auth.py
-│   │   └── ...
+│   │   ├── serializers.py
+│   │   ├── urls.py
+│   │   ├── views.py
+│   │   └── tests/
+│   │       └── test_auth.py
 │   │
 │   ├── documents/
 │   │   ├── migrations/
-│   │   │   └── 0001_initial.py
 │   │   ├── admin.py
 │   │   ├── apps.py
 │   │   ├── models.py
-│   │   ├── tests/
-│   │   │   └── test_documents.py
-│   │   └── ...
+│   │   ├── serializers.py
+│   │   ├── views.py
+│   │   └── tests/
+│   │       └── test_documents.py
 │   │
 │   ├── chat/
 │   │   ├── migrations/
 │   │   ├── admin.py
 │   │   ├── apps.py
 │   │   ├── models.py
-│   │   └── ...
+│   │   └── views.py
 │   │
 │   ├── config/
 │   │   ├── settings.py
@@ -172,17 +183,23 @@ Knowledge-Assistant/
 │   │
 │   ├── manage.py
 │   ├── Dockerfile
-│   └── requirements.txt
+│   ├── requirements.txt
+│   └── pytest.ini
 │
 ├── .env.example
 ├── .gitignore
+├── CONTRIBUTING.md
+├── LICENSE
 ├── docker-compose.yml
+├── ruff.toml
 └── README.md
 ```
 
-### Application Responsibilities
+---
 
-#### `accounts`
+# Application Responsibilities
+
+## `accounts`
 
 Responsible for user-related functionality.
 
@@ -196,7 +213,7 @@ Current functionality includes:
 * Password validation
 * Authentication tests
 
-#### `documents`
+## `documents`
 
 Responsible for document-related functionality.
 
@@ -214,7 +231,7 @@ Currently contains:
 * File validation
 * Pagination
 
-#### `chat`
+## `chat`
 
 Reserved for future conversational and Knowledge Assistant functionality.
 
@@ -226,16 +243,16 @@ The current database relationship is:
 
 ```text
                     User
-                     │
-                     │ 1
-                     │
-                     ▼
+                      │
+                      │ 1
+                      │
+                      ▼
                   Document
-                     │
-                     │ 1:N
-                     │
-                     ▼
-               DocumentChunk
+                      │
+                      │ 1:N
+                      │
+                      ▼
+                DocumentChunk
 ```
 
 ## Document
@@ -302,7 +319,6 @@ Example configuration:
 
 ```env
 SECRET_KEY=replace-with-a-secure-secret-key
-
 DEBUG=True
 
 DB_NAME=knowledge_assistant
@@ -316,9 +332,19 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 ```
 
+### Configuration Roles
+
+The `DB_*` variables are used by Django.
+
+The `POSTGRES_*` variables are used by the official PostgreSQL Docker image.
+
+Both sets should contain matching database credentials.
+
 ### Important
 
 Never commit the actual `.env` file or production secrets to Git.
+
+For production, use a strong secret key and secure credentials rather than the development values shown above.
 
 ---
 
@@ -363,17 +389,26 @@ Replace `<repository-url>` with the actual GitHub repository URL.
 cp .env.example .env
 ```
 
-Update `.env` with the required configuration.
+Update `.env` with your local configuration if necessary.
 
 ---
 
-## 3. Start the Application
+## 3. Build and Start the Application
 
 ```bash
-docker compose up -d
+docker compose up --build
 ```
 
-This starts the Django and PostgreSQL services.
+This builds the Django image and starts:
+
+* Django
+* PostgreSQL
+
+For detached mode:
+
+```bash
+docker compose up -d --build
+```
 
 Check the running containers:
 
@@ -392,17 +427,25 @@ knowledge_assistant_db
 
 # Database Setup
 
-Create and apply Django migrations:
+Apply the existing migrations:
 
 ```bash
-docker compose run --rm web python manage.py makemigrations
-```
-
-```bash
-docker compose run --rm web python manage.py migrate
+docker compose exec web python manage.py migrate
 ```
 
 Migration files are part of the source code and should be committed to Git.
+
+If models have changed and new migrations are required:
+
+```bash
+docker compose exec web python manage.py makemigrations
+```
+
+Then apply them:
+
+```bash
+docker compose exec web python manage.py migrate
+```
 
 ---
 
@@ -411,7 +454,7 @@ Migration files are part of the source code and should be committed to Git.
 Create a Django superuser:
 
 ```bash
-docker compose run --rm web python manage.py createsuperuser
+docker compose exec web python manage.py createsuperuser
 ```
 
 Follow the prompts to create the administrator account.
@@ -547,13 +590,13 @@ The API returns:
 
 The project uses `drf-spectacular` to generate an OpenAPI schema.
 
-OpenAPI schema:
+## OpenAPI Schema
 
 ```text
 http://127.0.0.1:8000/api/schema/
 ```
 
-Swagger UI:
+## Swagger UI
 
 ```text
 http://127.0.0.1:8000/api/docs/
@@ -583,7 +626,7 @@ This prevents locally uploaded documents from being accidentally committed to th
 
 The project uses `pytest` and `pytest-django` for automated testing.
 
-Run the complete test suite:
+Run the complete test suite inside the Docker container:
 
 ```bash
 docker compose exec web pytest
@@ -603,6 +646,54 @@ The test suite currently covers areas including:
 * Ownership isolation
 * Document validation
 * Pagination
+
+Tests are expected to pass against the PostgreSQL database used by the Docker environment.
+
+---
+
+# Code Quality
+
+The project uses **Black** for formatting and **Ruff** for linting.
+
+## Black
+
+Check formatting:
+
+```bash
+docker compose exec web black --check .
+```
+
+Format the project:
+
+```bash
+docker compose exec web black .
+```
+
+## Ruff
+
+Run linting:
+
+```bash
+docker compose exec web ruff check .
+```
+
+Before submitting changes, make sure both checks pass.
+
+---
+
+# Development Checks
+
+Run Django's system checks:
+
+```bash
+docker compose exec web python manage.py check
+```
+
+Check the configured database:
+
+```bash
+docker compose exec web python manage.py check --database default
+```
 
 ---
 
@@ -634,58 +725,46 @@ unless you intentionally want to delete the PostgreSQL volume and its data.
 
 ---
 
-# Development Checks
-
-Run Django's system checks:
-
-```bash
-docker compose run --rm web python manage.py check
-```
-
-Check the configured database:
-
-```bash
-docker compose run --rm web python manage.py check --database default
-```
-
----
-
 # Git Repository Hygiene
 
 The repository intentionally ignores development-specific files:
 
 ```text
 .env
-
 .venv/
 venv/
-
 __pycache__/
 *.pyc
+*.pyo
 *.sqlite3
 db.sqlite3
-
+backend/media/
 media/
 staticfiles/
-
 .vscode/
 .idea/
-
 *.log
+.DS_Store
 ```
 
 The following should remain tracked:
 
 ```text
 .env.example
+.gitignore
 Dockerfile
 docker-compose.yml
 requirements.txt
+ruff.toml
+pytest.ini
 README.md
-
+CONTRIBUTING.md
+LICENSE
 Django source code
 Django migration files
 ```
+
+Development databases, environment files, Python cache files, logs, and uploaded media should never be committed.
 
 ---
 
@@ -697,6 +776,9 @@ The intended development workflow is:
 Modify code
     │
     ▼
+Run code-quality checks
+    │
+    ▼
 Run Django checks
     │
     ▼
@@ -706,10 +788,13 @@ Create migrations if models changed
 Apply migrations
     │
     ▼
-Test functionality
+Run tests
     │
     ▼
 Update documentation
+    │
+    ▼
+Review git diff
     │
     ▼
 Commit changes
@@ -718,15 +803,13 @@ Commit changes
 Example:
 
 ```bash
-docker compose run --rm web python manage.py check
-
-docker compose run --rm web python manage.py makemigrations
-
-docker compose run --rm web python manage.py migrate
-
+docker compose exec web black --check .
+docker compose exec web ruff check .
+docker compose exec web python manage.py check
+docker compose exec web python manage.py migrate
 docker compose exec web pytest
-
-docker compose up -d
+git diff --check
+git status
 ```
 
 ---
@@ -874,6 +957,13 @@ Planned:
 
 The existing `DocumentChunk.embedding` field is reserved for this phase.
 
+Potential technologies include:
+
+* pgvector
+* Ollama
+* Embedding models
+* Vector similarity search
+
 ---
 
 # Phase 5 — Knowledge Assistant
@@ -944,11 +1034,13 @@ Planned:
 
 # Milestones
 
-| Version | Milestone          | Status   |
-| ------- | ------------------ | -------- |
-| `v0.1`  | Backend Foundation | Complete |
-| `v0.2`  | JWT Authentication | Complete |
-| `v0.3`  | Document CRUD API  | Complete |
+| Version | Milestone                                                      | Status   |
+| ------- | -------------------------------------------------------------- | -------- |
+| `v0.1`  | Backend Foundation + REST API + Authentication + Document CRUD | Complete |
+| `v0.2`  | JWT Authentication                                             | Complete |
+| `v0.3`  | Document CRUD API                                              | Complete |
+| `v0.4`  | RAG Pipeline                                                   | Planned  |
+| `v0.5`  | Knowledge Assistant                                            | Planned  |
 
 ---
 
@@ -956,20 +1048,63 @@ Planned:
 
 Contributions, suggestions, bug reports, and improvements are welcome.
 
+Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) for:
+
+* Local development setup
+* Branching conventions
+* Code style
+* Testing requirements
+* Pull request expectations
+
 Before submitting a change:
 
 1. Create a branch for your work.
 2. Make focused changes.
-3. Run the available checks and tests.
-4. Update documentation when necessary.
-5. Submit a pull request describing the change.
-
-A detailed `CONTRIBUTING.md` will be added as the project becomes ready for external contributions.
+3. Run Black.
+4. Run Ruff.
+5. Run the test suite.
+6. Update documentation when necessary.
+7. Submit a pull request describing the change.
 
 ---
 
 # License
 
-This project is currently under development.
+This project is licensed under the **MIT License**.
 
-A project license will be added before public distribution.
+See the [`LICENSE`](LICENSE) file for the complete license text.
+
+---
+
+# Project Philosophy
+
+This project is intentionally being developed in phases rather than attempting to build the entire Knowledge Assistant at once.
+
+The focus is on establishing a reliable backend foundation first:
+
+```text
+Django
+   │
+   ▼
+REST API
+   │
+   ▼
+Authentication
+   │
+   ▼
+Document Management
+   │
+   ▼
+PostgreSQL
+   │
+   ▼
+RAG Pipeline
+   │
+   ▼
+Knowledge Assistant
+   │
+   ▼
+Production Engineering
+```
+
+Each phase is intended to produce a working, testable milestone before the next layer is introduced.

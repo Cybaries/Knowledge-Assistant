@@ -7,30 +7,54 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0001_initial'),
+        ("documents", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='document',
-            options={'ordering': ['-uploaded_at']},
+            name="document",
+            options={"ordering": ["-uploaded_at"]},
         ),
         migrations.AddField(
-            model_name='document',
-            name='status',
-            field=models.CharField(choices=[('UPLOADING', 'Uploading'), ('PROCESSING', 'Processing'), ('READY', 'Ready'), ('FAILED', 'Failed')], default='UPLOADING', max_length=20),
+            model_name="document",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("UPLOADING", "Uploading"),
+                    ("PROCESSING", "Processing"),
+                    ("READY", "Ready"),
+                    ("FAILED", "Failed"),
+                ],
+                default="UPLOADING",
+                max_length=20,
+            ),
         ),
         migrations.CreateModel(
-            name='DocumentChunk',
+            name="DocumentChunk",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', models.TextField()),
-                ('embedding', models.JSONField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('document', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='chunks', to='documents.document')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("text", models.TextField()),
+                ("embedding", models.JSONField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "document",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="chunks",
+                        to="documents.document",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['created_at'],
+                "ordering": ["created_at"],
             },
         ),
     ]
