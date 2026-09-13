@@ -30,9 +30,9 @@ The backend foundation, JWT authentication, document management API, ownership i
 
 The next milestone is:
 
-**Phase 2 — RAG Pipeline**
+**Phase 4 — RAG Pipeline**
 
-The target architecture and folder structure for Phase 2 have been designed and are documented below, ahead of implementation, so the RAG pipeline can be built without restructuring the existing apps.
+The target architecture and folder structure for Phase 4 have been designed and are documented below, ahead of implementation, so the RAG pipeline can be built without restructuring the existing apps.
 
 ---
 
@@ -86,7 +86,7 @@ The target architecture and folder structure for Phase 2 have been designed and 
 
 ## Planned Technologies
 
-### Phase 2 — RAG Pipeline
+### Phase 4 — RAG Pipeline
 
 - FastAPI — new `ai_service` microservice for embeddings and LLM calls
 - pgvector — Postgres extension for vector storage and similarity search
@@ -97,13 +97,13 @@ The target architecture and folder structure for Phase 2 have been designed and 
 - Vector similarity search
 - Retrieval-Augmented Generation
 
-### Phase 3 — Knowledge Assistant
+### Phase 5 — Knowledge Assistant
 
 - Question-answering API
 - Conversation history
 - Chat API
 
-### Phase 4 — Production Engineering & CI/CD
+### Phase 6 — Production Engineering & CI/CD
 
 - Background processing
 - Redis
@@ -151,7 +151,7 @@ The application is containerized using Docker Compose:
 
 The Django application communicates with PostgreSQL through the Docker Compose network.
 
-## Planned Architecture — Phase 2 (RAG Pipeline)
+## Planned Architecture — Phase 4 (RAG Pipeline)
 
 ```text
                      Client request
@@ -211,7 +211,7 @@ Knowledge-Assistant/
 │   │   └── tests/
 │   │       └── test_documents.py
 │   │
-│   ├── rag/                        # planned — Phase 2
+│   ├── rag/                        # planned — Phase 4
 │   │   ├── migrations/
 │   │   ├── pipeline.py             # process_document(document_id) — chunk, embed, store
 │   │   ├── chunking.py             # text splitting strategy
@@ -242,7 +242,7 @@ Knowledge-Assistant/
 │   ├── requirements.txt
 │   └── pytest.ini
 │
-├── ai_service/                      # planned — Phase 2
+├── ai_service/                      # planned — Phase 4
 │   ├── main.py                     # /embed and /generate endpoints
 │   ├── embeddings.py                # sentence-transformers wrapper
 │   ├── llm.py                       # Ollama client wrapper
@@ -296,7 +296,7 @@ Currently contains:
 - File validation
 - Pagination
 
-## `rag` (planned — Phase 2)
+## `rag` (planned — Phase 4)
 
 Responsible for turning uploaded documents into retrievable, embedded chunks, and answering questions against them.
 
@@ -530,7 +530,7 @@ knowledge_assistant_db
 
 ```
 
-_(Phase 2 will add_ _`ai_service`_ _and_ _`ollama`_ _to this list — see Planned Architecture above.)_
+_(Phase 4 will add_ _`ai_service`_ _and_ _`ollama`_ _to this list — see Planned Architecture above.)_
 
 ---
 
@@ -775,7 +775,7 @@ The test suite currently covers areas including:
 
 Tests are expected to pass against the PostgreSQL database used by the Docker environment.
 
-**Planned (Phase 2):** `rag` app tests will mock `ai_client` rather than making real calls to `ai_service` or Ollama, so the suite stays fast and does not depend on a model server being available.
+**Planned (Phase 4):** `rag` app tests will mock `ai_client` rather than making real calls to `ai_service` or Ollama, so the suite stays fast and does not depend on a model server being available.
 
 ---
 
@@ -1084,11 +1084,11 @@ User B cannot access Document A or B.
 
 ---
 
-# Phase 2 — RAG Pipeline
+# Phase 4 — RAG Pipeline
 
 **Status: 🔜 Upcoming — architecture and folder structure designed**
 
-The target architecture, new applications, and folder structure for this phase are documented above under **Planned Architecture — Phase 2**, **Project Structure**, and **Application Responsibilities**, decided ahead of implementation to avoid restructuring mid-phase.
+The target architecture, new applications, and folder structure for this phase are documented above under **Planned Architecture — Phase 4**, **Project Structure**, and **Application Responsibilities**, decided ahead of implementation to avoid restructuring mid-phase.
 
 ## Week 5 — Infrastructure
 
@@ -1121,7 +1121,7 @@ The target architecture, new applications, and folder structure for this phase a
 ## Week 8 — Polish and Release
 
 - [ ] Update API docs to reflect the new query endpoint
-- [ ] Update README and milestones for Phase 2 completion
+- [ ] Update README and milestones for Phase 4 completion
 - [ ] Full clean `docker compose up --build` verification with the new services
 - [ ] Tag and release `v0.5`
 
@@ -1134,7 +1134,7 @@ The target architecture, new applications, and folder structure for this phase a
 
 ---
 
-# Phase 3 — Knowledge Assistant
+# Phase 5 — Knowledge Assistant
 
 **Status: 🔜 Planned**
 
@@ -1176,7 +1176,7 @@ Grounded Answer
 
 ---
 
-# Phase 4 — Production Engineering & CI/CD
+# Phase 6 — Production Engineering & CI/CD
 
 **Status: 🔜 Planned**
 
