@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from pgvector.django import VectorField
 
 User = get_user_model()
 
@@ -34,7 +35,11 @@ class DocumentChunk(models.Model):
         Document, on_delete=models.CASCADE, related_name="chunks"
     )
     text = models.TextField()
-    embedding = models.JSONField(null=True, blank=True)
+    embedding = VectorField(
+        dimensions=384,
+        null=True,
+        blank=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
