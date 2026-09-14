@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16
+    image: pgvector/pgvector:pg16
     container_name: knowledge_assistant_db
     restart: unless-stopped
     env_file:
@@ -24,6 +24,26 @@ services:
       - .env
     depends_on:
       - db
+  
+  ai_service:
+    build:
+      context: ./ai_service
+    container_name: knowledge_assistant_ai
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+
+  ollama:
+    image: ollama/ollama
+    container_name: knowledge_assistant_ollama
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
 
 volumes:
   postgres_data:
+  ollama_data:
