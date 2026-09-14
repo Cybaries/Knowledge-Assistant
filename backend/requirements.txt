@@ -15,3 +15,4 @@ black==26.5.1
 ruff==0.16.7
 pypdf
 python-docx
+httpx

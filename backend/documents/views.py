@@ -1,5 +1,7 @@
 from rest_framework import permissions, viewsets
 
+from rag.pipeline import process_document
+
 from .models import Document
 from .serializers import DocumentSerializer
 
@@ -12,4 +14,5 @@ class DocumentViewSet(viewsets.ModelViewSet):
         return Document.objects.filter(owner=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        document = serializer.save(owner=self.request.user)
+        process_document(document.pk)

@@ -34,6 +34,7 @@ class DocumentChunk(models.Model):
     document = models.ForeignKey(
         Document, on_delete=models.CASCADE, related_name="chunks"
     )
+    chunk_index = models.PositiveIntegerField()
     text = models.TextField()
     embedding = VectorField(
         dimensions=384,
