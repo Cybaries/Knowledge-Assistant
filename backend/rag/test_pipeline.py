@@ -3,6 +3,7 @@ from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
+
 from documents.models import Document, DocumentChunk, DocumentStatus
 from rag.ai_client import AIServiceError
 from rag.pipeline import process_document
@@ -34,9 +35,7 @@ class ProcessDocumentTests(TestCase):
         mock_parse_document,
         mock_get_embeddings,
     ):
-        mock_parse_document.return_value = (
-            "First paragraph.\n\nSecond paragraph."
-        )
+        mock_parse_document.return_value = "First paragraph.\n\nSecond paragraph."
         mock_get_embeddings.return_value = [
             [0.1] * 384,
         ]
@@ -52,9 +51,7 @@ class ProcessDocumentTests(TestCase):
         )
 
         chunks = list(
-            DocumentChunk.objects.filter(document=self.document).order_by(
-                "chunk_index"
-            )
+            DocumentChunk.objects.filter(document=self.document).order_by("chunk_index")
         )
 
         self.assertEqual(chunks[0].chunk_index, 0)

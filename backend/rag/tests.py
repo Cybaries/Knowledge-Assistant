@@ -1,4 +1,5 @@
 from django.test import SimpleTestCase
+
 from rag.chunking import CHUNK_OVERLAP, CHUNK_SIZE, chunk_text
 
 
@@ -29,11 +30,7 @@ class ChunkTextTests(SimpleTestCase):
         )
 
     def test_paragraphs_are_combined_until_chunk_limit(self):
-        text = (
-            "First paragraph. " * 30
-            + "\n\n"
-            + "Second paragraph. " * 30
-        )
+        text = "First paragraph. " * 30 + "\n\n" + "Second paragraph. " * 30
 
         chunks = chunk_text(text)
 
