@@ -4,15 +4,14 @@ from django.db import migrations, models
 def populate_chunk_indexes(apps, schema_editor):
     DocumentChunk = apps.get_model("documents", "DocumentChunk")
 
-    document_ids = (
-        DocumentChunk.objects.values_list("document_id", flat=True)
-        .distinct()
-    )
+    document_ids = DocumentChunk.objects.values_list(
+        "document_id", flat=True
+    ).distinct()
 
     for document_id in document_ids:
-        chunks = DocumentChunk.objects.filter(
-            document_id=document_id
-        ).order_by("created_at", "pk")
+        chunks = DocumentChunk.objects.filter(document_id=document_id).order_by(
+            "created_at", "pk"
+        )
 
         for index, chunk in enumerate(chunks):
             chunk.chunk_index = index

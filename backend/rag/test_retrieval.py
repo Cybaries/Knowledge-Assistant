@@ -1,8 +1,8 @@
-
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+
 from documents.models import Document, DocumentChunk, DocumentStatus
 from rag.retrieval import get_relevant_chunks
 
@@ -93,14 +93,10 @@ class RetrievalTests(TestCase):
         )
 
         self.assertTrue(results)
-        self.assertTrue(
-            all(chunk.document_id == self.document.pk for chunk in results)
-        )
+        self.assertTrue(all(chunk.document_id == self.document.pk for chunk in results))
 
     @patch("rag.retrieval.get_embeddings")
-    def test_cannot_retrieve_another_users_document_by_id(
-        self, mock_embeddings
-    ):
+    def test_cannot_retrieve_another_users_document_by_id(self, mock_embeddings):
         mock_embeddings.return_value = [[1.0] + [0.0] * 383]
 
         results = get_relevant_chunks(

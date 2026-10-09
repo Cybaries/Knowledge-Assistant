@@ -1,10 +1,11 @@
 from drf_spectacular.utils import extend_schema
-from rag.ai_client import generate
-from rag.retrieval import get_relevant_chunks
-from rag.serializers import QueryRequestSerializer, QueryResponseSerializer
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from rag.ai_client import AIServiceError, generate
+from rag.retrieval import get_relevant_chunks
+from rag.serializers import QueryRequestSerializer, QueryResponseSerializer
 
 
 class QueryView(APIView):
@@ -21,12 +22,23 @@ class QueryView(APIView):
         question = request_serializer.validated_data["question"]
         document_id = request_serializer.validated_data.get("document_id")
 
-        chunks = get_relevant_chunks(
-            user=request.user,
-            question=question,
-            document_id=document_id,
-            top_k=5,
-        )
+        try:
+            chunks = get_relevant_chunks(
+                user=request.user,
+                question=question,
+                document_id=document_id,
+                top_k=5,
+            )
+        except AIServiceError:
+            return Response(
+                {
+                    "detail": (
+                        "The AI service is temporarily unavailable. "
+                        "Please try again later."
+                    )
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
 
         if not chunks:
             response_data = {
@@ -35,11 +47,13 @@ class QueryView(APIView):
             }
             response_serializer = QueryResponseSerializer(data=response_data)
             response_serializer.is_valid(raise_exception=True)
-            return Response(response_serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                response_serializer.data,
+                status=status.HTTP_200_OK,
+            )
 
         context = "\n\n".join(
-            f"Source: {chunk.document.title}\n{chunk.text}"
-            for chunk in chunks
+            f"Source: {chunk.document.title}\n{chunk.text}" for chunk in chunks
         )
 
         prompt = f"""You are a document question-answering assistant.
@@ -56,7 +70,18 @@ Question:
 
 Answer:"""
 
-        answer = generate(prompt)
+        try:
+            answer = generate(prompt)
+        except AIServiceError:
+            return Response(
+                {
+                    "detail": (
+                        "The AI service is temporarily unavailable. "
+                        "Please try again later."
+                    )
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
 
         response_data = {
             "answer": answer,
@@ -72,4 +97,7 @@ Answer:"""
         response_serializer = QueryResponseSerializer(data=response_data)
         response_serializer.is_valid(raise_exception=True)
 
-        return Response(response_serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            response_serializer.data,
+            status=status.HTTP_200_OK,
+        )

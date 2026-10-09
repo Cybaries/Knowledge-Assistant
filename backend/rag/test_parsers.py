@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from django.test import SimpleTestCase
-from rag.parsers import (DocumentParsingError, parse_document, parse_docx,
-                         parse_txt)
+
+from rag.parsers import DocumentParsingError, parse_document, parse_docx, parse_txt
 
 
 class ParserTests(SimpleTestCase):

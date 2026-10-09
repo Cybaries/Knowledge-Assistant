@@ -1,8 +1,9 @@
 import pytest
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
-from documents.models import Document
 from rest_framework.test import APIClient
+
+from documents.models import Document
 
 User = get_user_model()
 

@@ -8,7 +8,7 @@ def generate(prompt: str) -> str:
         "OLLAMA_URL",
         "http://ollama:11434",
     )
-    model = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
+    model = os.getenv("OLLAMA_MODEL", "llama3.2:1b-smallctx")
 
     try:
         response = httpx.post(

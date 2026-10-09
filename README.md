@@ -643,6 +643,19 @@ EMBEDDING_MODEL_NAME=all-MiniLM-L6-v2
 
 - `EMBEDDING_MODEL_NAME` — the `sentence-transformers` model used for embedding generation
 
+### Create the custom Ollama model
+
+The repository-root `Modelfile` defines the lightweight model configuration.
+
+After starting Docker Compose, run:
+
+```bash
+sudo docker compose cp Modelfile ollama:/tmp/Modelfile
+sudo docker compose exec -T ollama ollama create llama3.2:1b-smallctx -f /tmp/Modelfile
+```
+
+Ensure `.env` contains `OLLAMA_MODEL=llama3.2:1b-smallctx`.
+
 ### Important
 
 Never commit the actual `.env` file or production secrets to Git.

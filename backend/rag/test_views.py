@@ -1,10 +1,11 @@
-
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
-from documents.models import Document, DocumentChunk, DocumentStatus
 from rest_framework import status
 from rest_framework.test import APITestCase
+
+from documents.models import Document, DocumentChunk, DocumentStatus
+from rag.ai_client import AIServiceError
 
 User = get_user_model()
 
@@ -34,9 +35,7 @@ class QueryViewTests(APITestCase):
 
     @patch("rag.views.generate")
     @patch("rag.views.get_relevant_chunks")
-    def test_returns_answer_and_sources(
-        self, mock_retrieval, mock_generate
-    ):
+    def test_returns_answer_and_sources(self, mock_retrieval, mock_generate):
         mock_retrieval.return_value = [self.chunk]
         mock_generate.return_value = "The project uses Django and PostgreSQL."
 
@@ -105,3 +104,39 @@ class QueryViewTests(APITestCase):
             response.status_code,
             status.HTTP_400_BAD_REQUEST,
         )
+
+    @patch("rag.views.get_relevant_chunks")
+    def test_ai_service_failure_during_retrieval_returns_503(self, mock_retrieval):
+        mock_retrieval.side_effect = AIServiceError("Failed to generate embeddings.")
+
+        response = self.client.post(
+            self.url,
+            {"question": "Which technologies does the project use?"},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+        self.assertIn("temporarily unavailable", response.data["detail"])
+
+    @patch("rag.views.generate")
+    @patch("rag.views.get_relevant_chunks")
+    def test_ai_service_failure_during_generation_returns_503(
+        self, mock_retrieval, mock_generate
+    ):
+        mock_retrieval.return_value = [self.chunk]
+        mock_generate.side_effect = AIServiceError("Failed to generate text.")
+
+        response = self.client.post(
+            self.url,
+            {"question": "Which technologies does the project use?"},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+        self.assertIn("temporarily unavailable", response.data["detail"])

@@ -1,6 +1,6 @@
+from pgvector.django import CosineDistance
 
 from documents.models import DocumentChunk
-from pgvector.django import CosineDistance
 from rag.ai_client import get_embeddings
 
 
@@ -21,8 +21,7 @@ def get_relevant_chunks(
         queryset = queryset.filter(document_id=document_id)
 
     return list(
-        queryset.annotate(
-            distance=CosineDistance("embedding", query_vector)
-        )
-        .order_by("distance")[:top_k]
+        queryset.annotate(distance=CosineDistance("embedding", query_vector)).order_by(
+            "distance"
+        )[:top_k]
     )
