@@ -24,3 +24,20 @@ def get_embeddings(texts: list[str]) -> list[list[float]]:
     data = response.json()
 
     return data["embeddings"]
+
+
+def generate(prompt: str) -> str:
+    base_url = os.getenv("AI_SERVICE_URL", "http://ai_service:8001")
+    url = f"{base_url}/generate"
+
+    try:
+        response = httpx.post(
+            url,
+            json={"prompt": prompt},
+            timeout=300.0,
+        )
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        raise AIServiceError("Failed to generate text.") from exc
+
+    return response.json()["text"]

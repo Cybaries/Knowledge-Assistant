@@ -1,5 +1,5 @@
 fastapi
 uvicorn
-sentence-transformers
 httpx
 pydantic
+sentence-transformers
